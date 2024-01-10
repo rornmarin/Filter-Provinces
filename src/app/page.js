@@ -1,6 +1,6 @@
 "use client"
 import ProvinceForm from "@/components/ProvinceForm"
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { uuidv4 } from "@/util/inext";
 import DistricForm from "@/components/DistricForm";
 import CommuneForm from "@/components/CommuneForm";
@@ -15,6 +15,41 @@ export default function Home() {
   const [districts, setDistricts] = useState([]);
   const [communes, setCommunes] = useState([]);
   const [Villages, setVillages] = useState([]);
+
+
+  const data = useMemo(() => {
+
+    const id = uuidv4();
+
+    return provinces.map((province) => {
+
+      const districtResults = districts.filter(
+        (district) => district.province_id === province.id
+      );
+
+      const communeResults = communes.filter((commune) =>
+        districtResults.filter(
+          (district) => district.id === commune.district_id
+        )
+      );
+
+      const totalVillage = Villages.filter((vil) =>
+        communeResults.find((com) => com.id === vil.commune_id)
+      );
+
+      const result = {
+        id: id,
+        province,
+        totalDistricts: districtResults.length,
+        totalCommunes: communeResults.length,
+        totalVillages: totalVillage.length,
+      };
+
+      return result;
+
+    });
+
+  }, [provinces, districts, communes, Villages]);
 
   const onSaveProvince = (param) => {
     const id = uuidv4();
@@ -93,7 +128,7 @@ export default function Home() {
         <DistricForm onSave={onSaveDistric} provinces={provinces}/>
         <CommuneForm onSave={onSaveCommune} provinces={provinces} districts={districts} />
         <VillagesForm onSave={onSaveVillages} provinces={provinces} districts={districts} communes={communes} Villages={Villages}/>
-        <ProvinceData />
+        <ProvinceData data={data}/>
         <Table title={"District"} col1={"distric"} />
         <Table title={"Commune"} col1={"commune"} />
         <Table title={"Village"} col1={"Village"} />

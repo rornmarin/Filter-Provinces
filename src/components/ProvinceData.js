@@ -1,4 +1,7 @@
-export const ProvinceData = () => {
+export const ProvinceData = ({data}) => {
+
+    console.log(data);
+
     return (
         
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg px-10">
@@ -24,10 +27,15 @@ export const ProvinceData = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        {/* <th>hh</th> */}
-                    </tr>
-                        
+                    {data.map((item) => (
+                        <tr key={item.id}>
+                            <td>{item.province.name}</td>
+                            <td>{item?.totalDistricts}</td>
+                            <td>{item?.totalCommunes}</td>
+                            <td>{item?.totalVillages}</td>
+                            <td>Action</td> 
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

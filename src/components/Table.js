@@ -16,7 +16,7 @@ export const Table = ({title,col1}) => {
                 </thead>
                 <tbody>
                     <tr>
-                        {/* <th>hh</th> */}
+                        <th>hh</th>
                     </tr>
                         
                 </tbody>
