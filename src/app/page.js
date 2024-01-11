@@ -7,7 +7,7 @@ import CommuneForm from "@/components/CommuneForm";
 import VillagesForm from "@/components/VillagesForm";
 import { ProvinceData } from "@/components/ProvinceData";
 import { Table } from "@/components/Table";
-
+import { Modal } from "@/components/Modal";
 
 export default function Home() {
 
@@ -15,6 +15,9 @@ export default function Home() {
   const [districts, setDistricts] = useState([]);
   const [communes, setCommunes] = useState([]);
   const [Villages, setVillages] = useState([]);
+
+  const [popUp,setPopUp] = useState(false)
+  const [viewDetail,setViewDetail] = useState()
 
 
   const data = useMemo(() => {
@@ -53,7 +56,6 @@ export default function Home() {
 
   const onSaveProvince = (param) => {
     const id = uuidv4();
-    console.log(id);
     setProvinces((pre) => {
 
       pre.push({
@@ -69,7 +71,6 @@ export default function Home() {
 
   const onSaveDistric = (param) => {
     const id = uuidv4();
-    console.log(param)
     setDistricts((pre) => {
 
       return [
@@ -99,14 +100,14 @@ export default function Home() {
   }
 
   const onSaveVillages = (param) =>{
-    console.log(param)
     const id = uuidv4();
     setVillages((pre) => {
 
       return [
         ...pre,
         pre.push({
-          id:id
+          id:id,
+          ...param
         })
       ]
     })
@@ -114,11 +115,26 @@ export default function Home() {
 
   }
 
-  const getData = () => {
+  function onDelete(param) {
+    const provinceId = param?.province?.id;
 
-    console.log(provinces);
-    console.log(districts);
+    // console.log(param)
 
+    setProvinces((pre) => {
+      return pre.filter((province) => province.id !== provinceId);
+    });
+
+    setDistricts((pre) => {
+      return pre.filter((district) => district.province_id !== provinceId);
+    });
+
+    setCommunes(
+      communes.filter((commune) => commune.province_id !== provinceId)
+    );
+
+    setVillages((pre) => {
+      return pre.filter((village) => village.province_id !== provinceId);
+    });
   }
 
   return (
@@ -128,15 +144,10 @@ export default function Home() {
         <DistricForm onSave={onSaveDistric} provinces={provinces}/>
         <CommuneForm onSave={onSaveCommune} provinces={provinces} districts={districts} />
         <VillagesForm onSave={onSaveVillages} provinces={provinces} districts={districts} communes={communes} Villages={Villages}/>
-        <ProvinceData data={data}/>
-        <Table title={"District"} col1={"distric"} />
-        <Table title={"Commune"} col1={"commune"} />
-        <Table title={"Village"} col1={"Village"} />
-
-
-        <button onClick={getData}>Test</button>
-        {/* <pre>{JSON.stringify(provinces)}</pre>
-        <pre>{JSON.stringify(districs)}</pre> */}
+        <ProvinceData data={data} onDelete={onDelete} onsetProvince={setProvinces}/>
+        <Table title={"District"} col1={"distric"} items={districts} handleDelete={setDistricts} onsetDistricts={setDistricts} />
+        <Table title={"Commune"} col1={"commune"} items={communes} handleDelete={setCommunes} onsetCommunes={setCommunes}/>
+        <Table title={"Village"} col1={"Village"} items={Villages}/>
 
     </div>
   )

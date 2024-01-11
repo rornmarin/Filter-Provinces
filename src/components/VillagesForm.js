@@ -14,7 +14,7 @@ export default function VillagesForm({onSave,provinces,districts,communes}) {
     const [communesData,setCommunesData] = useState([]);
 
     const handleSelectProvince = (e) => {
-      
+
       const province_id = e.target.value;
   
       setForm({ ...form, district_id: '', name: '', name_km: '' }); 
@@ -28,8 +28,10 @@ export default function VillagesForm({onSave,provinces,districts,communes}) {
       setForm({
         ...form,
         district_id: districtId,
+        communeId : ''
       });
-      setCommunesData(communes.filter(com => com.district_id === districtId))
+      const commune = communes.filter(com => com.district_id === districtId);
+      setCommunesData(commune);
     };
 
     const handleCommuneSelect = (e) => {
@@ -53,6 +55,7 @@ export default function VillagesForm({onSave,provinces,districts,communes}) {
     const onClickSave = () => {
         onSave(form)
         setDistrictData([])
+        setCommunesData([])
         setForm({village_id:'',name:'',name_km:'', province_id: '', district_id: '', commune_id: '' })
         setSelectedProvince(''); 
     }

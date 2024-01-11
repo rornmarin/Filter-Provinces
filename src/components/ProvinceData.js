@@ -1,6 +1,29 @@
-export const ProvinceData = ({data}) => {
+import React, { Children, useState } from 'react';
+import { Modal } from './Modal';
+import { TextInput } from './input';
 
-    console.log(data);
+export const ProvinceData = ({ data=[],onDelete,onsetProvince}) => {
+
+    const [popUp,setPopUp] = useState(false)
+
+    const [viewDetail,setViewDetail] = useState()
+
+    const onEditView = (data) => {
+        setPopUp(true)
+        setViewDetail(data)
+        console.log(data);
+    };
+
+    const handleUpdate = (updatedData) => {
+
+        onsetProvince((prevProvinces) => {
+        return prevProvinces.map((province) =>
+            province.id === viewDetail.id ? { ...province, ...updatedData } : province
+        );
+        });
+
+        setPopUp(false);
+    };
 
     return (
         
@@ -27,17 +50,24 @@ export const ProvinceData = ({data}) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.province.name}</td>
-                            <td>{item?.totalDistricts}</td>
-                            <td>{item?.totalCommunes}</td>
-                            <td>{item?.totalVillages}</td>
-                            <td>Action</td> 
+                    {data?.map((item) => (
+                        <tr >
+                            <td scope="col" class="px-6 py-3">{item?.province?.name} / {item.province.name_km}</td>
+                            <td scope="col" class="px-6 py-3">{item?.totalDistricts}</td>
+                            <td scope="col" class="px-6 py-3">{item?.totalCommunes}</td>
+                            <td scope="col" class="px-6 py-3">{item?.totalVillages}</td>
+                            <td scope="col" class="px-6 py-3">
+                                <button onClick={() => onEditView(item.province)}>Edit / </button>
+                                <button onClick={() => onDelete(item)}> Delete</button>
+                            </td> 
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+
+            <Modal data={viewDetail} onChangePopUp={setPopUp} isVisible={popUp} onUpdate={handleUpdate}/>
+            
         </div>
 
     )
