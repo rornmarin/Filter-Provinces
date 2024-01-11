@@ -14,10 +14,7 @@ export default function Home() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [communes, setCommunes] = useState([]);
-  const [Villages, setVillages] = useState([]);
-
-  const [popUp,setPopUp] = useState(false)
-  const [viewDetail,setViewDetail] = useState()
+  const [villages, setVillages] = useState([]);
 
 
   const data = useMemo(() => {
@@ -35,24 +32,26 @@ export default function Home() {
           (district) => district.id === commune.district_id
         )
       );
+      // console.log(communeResults)
 
-      const totalVillage = Villages.filter((vil) =>
+      const villageResults = villages.filter((vil) =>
         communeResults.find((com) => com.id === vil.commune_id)
       );
+      console.log(villageResults)
 
       const result = {
         id: id,
         province,
         totalDistricts: districtResults.length,
         totalCommunes: communeResults.length,
-        totalVillages: totalVillage.length,
+        totalVillages: villageResults.length,
       };
 
       return result;
 
     });
 
-  }, [provinces, districts, communes, Villages]);
+  }, [provinces, districts, communes, villages]);
 
   const onSaveProvince = (param) => {
     const id = uuidv4();
@@ -106,12 +105,13 @@ export default function Home() {
       return [
         ...pre,
         pre.push({
+          ...param,
           id:id,
-          ...param
+          
         })
       ]
     })
-    setVillages([...Villages])
+    setVillages([...villages])
 
   }
 
@@ -137,17 +137,52 @@ export default function Home() {
     });
   }
 
+  function onDeleteDistrict(param) {
+    console.log(param);
+
+    const districtId = param?.id;
+
+    setDistricts((pre) => {
+      return pre.filter((district) => district.id !== param?.id);
+    });
+    setCommunes(
+      communes.filter((commune) => commune.district_id !== districtId)
+    );
+
+    setVillages(
+      villages.filter((village) => village.district_id !== districtId)
+    );
+  }
+
+  function onDeleteCommune (param) {
+
+    const communeId = param?.id;
+    setCommunes((pre) => {
+      return pre.filter((commune) => commune.id != param?.id);
+    });
+
+    setVillages(villages.filte((village) => village.commune != communeId))
+  }
+
+  function onDeleteVillage (param) {
+
+    const villageId = param?.id;
+    setVillages((pre) => {
+      return pre.filter((village) => village.id != villageId)
+    })
+  }
+
   return (
     <div>
       
         <ProvinceForm onSave={onSaveProvince}/>
         <DistricForm onSave={onSaveDistric} provinces={provinces}/>
         <CommuneForm onSave={onSaveCommune} provinces={provinces} districts={districts} />
-        <VillagesForm onSave={onSaveVillages} provinces={provinces} districts={districts} communes={communes} Villages={Villages}/>
+        <VillagesForm onSave={onSaveVillages} provinces={provinces} districts={districts} communes={communes} />
         <ProvinceData data={data} onDelete={onDelete} onsetProvince={setProvinces}/>
-        <Table title={"District"} col1={"distric"} items={districts} handleDelete={setDistricts} onsetDistricts={setDistricts} />
-        <Table title={"Commune"} col1={"commune"} items={communes} handleDelete={setCommunes} onsetCommunes={setCommunes}/>
-        <Table title={"Village"} col1={"Village"} items={Villages}/>
+        <Table title={"District"} col1={"distric"} items={districts} handleDelete={onDeleteDistrict} onsetDistricts={setDistricts} />
+        <Table title={"Commune"} col1={"commune"} items={communes} handleDelete={onDeleteCommune} onsetCommunes={setCommunes}/>
+        <Table title={"Village"} col1={"Village"} items={villages} handleDelete={onDeleteVillage} onsetVillages={setVillages}/>
 
     </div>
   )

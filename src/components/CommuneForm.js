@@ -5,27 +5,40 @@ import { SelectInput } from "./input";
 
 export default function CommuneForm({onSave,provinces ,districts}) {
 
-  const [form,setForm] = useState({district_id:'',name:'',name_km:''})
+  const [form,setForm] = useState({district_id:'',name:'',name_km:'',province_id:'',})
 
   const [selectedProvince, setSelectedProvince] = useState('');
 
   const [districtData,setDistrictData] = useState([])
 
+  
   const handleSelectProvince = (e) => {
+
     const province_id = e.target.value;
 
-    setForm({ ...form, district_id: '', name: '', name_km: '' }); 
+    setForm({ ...form, 
+      district_id: '', 
+      name: '', 
+      name_km: '',
+      province_id:'',
+     }); 
+
     setSelectedProvince(province_id);
+
     const district = districts.filter(dis => dis.province_id === province_id)
+
     setDistrictData(district)
   }
 
   const handleDistrictSelect = (e) => {
+
     const districtId = e.target.value;
+
     setForm({
       ...form,
       district_id: districtId,
     });
+
   };
 
   const onChange = (e) => {
@@ -39,9 +52,10 @@ export default function CommuneForm({onSave,provinces ,districts}) {
   }
 
   const onClickSave = () => {
+
       onSave(form)
       setDistrictData([])
-      setForm({district_id:'',name:'',name_km:''})
+      setForm({district_id:'',name:'',name_km:'',province_id:''})
       setSelectedProvince(''); 
   }
 
